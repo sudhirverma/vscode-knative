@@ -10,6 +10,10 @@ import { openTreeItemInEditor } from './editor/knativeOpenTextDocument';
 import { KnativeReadonlyProvider, KN_READONLY_SCHEME } from './editor/knativeReadonlyProvider';
 import { EventingExplorer } from './eventingTree/eventingExplorer';
 import { EventingTreeItem } from './eventingTree/eventingTreeItem';
+import { buildFunction, deployFunction } from './functions/build-and-deploy-function';
+import { createFunction } from './functions/create-function';
+import { deleteFunction } from './functions/delete-function';
+import { functionExplorer } from './functions/functionsExplorer';
 import { Revision } from './knative/revision';
 import { Service } from './knative/service';
 import { ServingExplorer } from './servingTree/servingExplorer';
@@ -36,6 +40,11 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
   // Now provide the implementation of the command with registerCommand.
   // The commandId parameter must match the command field in package.json.
   disposable = [
+    vscode.commands.registerCommand('function.explorer.refresh', () => functionExplorer.refresh()),
+    vscode.commands.registerCommand('function.explorer.create', () => createFunction(extensionContext)),
+    vscode.commands.registerCommand('function.delete', (context) => deleteFunction(context)),
+    vscode.commands.registerCommand('function.build', () => buildFunction()),
+    vscode.commands.registerCommand('function.deploy', () => deployFunction()),
     vscode.commands.registerCommand('knative.service.open-in-browser', async (treeItem: ServingTreeItem) => {
       const item = treeItem.getKnativeItem();
       if (item instanceof Service) {
@@ -72,6 +81,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
     servingExplorer,
     eventingExplorer,
+    functionExplorer,
   ];
 
   // extensionContext.subscriptions.push(disposable);
